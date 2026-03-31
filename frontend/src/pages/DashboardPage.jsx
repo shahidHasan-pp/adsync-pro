@@ -8,6 +8,7 @@ import { api } from "../lib/api";
 import { clearSession, getUserEmail } from "../lib/auth";
 
 export default function DashboardPage() {
+  const [activeSection, setActiveSection] = useState("video_intake");
   const [videos, setVideos] = useState([]);
   const [selectedVideoId, setSelectedVideoId] = useState("");
   const [metrics, setMetrics] = useState(null);
@@ -29,6 +30,7 @@ export default function DashboardPage() {
     const response = await api.post("/videos", payload);
     setSyncUrl(response.data.creator_oauth_url);
     setSyncMessage("Creator link generated. Click it once to simulate approval.");
+    setActiveSection("creator_sync");
     await loadVideos();
   }
 
@@ -71,12 +73,12 @@ export default function DashboardPage() {
   return (
     <main className="min-h-screen bg-slate-100 p-4">
       <div className="mx-auto flex max-w-7xl gap-4">
-        <Sidebar />
+        <Sidebar activeSection={activeSection} onSectionChange={setActiveSection} />
         <section className="flex-1">
           <TopBar email={email} onLogout={handleLogout} />
           <div className="space-y-4">
-            <AddVideoForm onAdd={handleAddVideo} />
-            {syncUrl ? (
+            {activeSection === "video_intake" ? <AddVideoForm onAdd={handleAddVideo} /> : null}
+            {activeSection === "creator_sync" && syncUrl ? (
               <div className="rounded-2xl border border-orange-200 bg-orange-50 p-4">
                 <p className="text-sm text-orange-800">{syncMessage}</p>
                 <div className="mt-3 flex flex-wrap gap-2">
@@ -91,8 +93,26 @@ export default function DashboardPage() {
                 </div>
               </div>
             ) : null}
-            <VideoTable videos={videos} selectedVideoId={selectedVideoId} onSelect={setSelectedVideoId} />
-            <MetricsPanel metrics={metrics} loading={metricsLoading} />
+            {activeSection === "creator_sync" && !syncUrl ? (
+              <div className="rounded-2xl border border-slate-200 bg-white p-5 text-sm text-slate-600">
+                No creator sync link yet. Go to <strong>Video Intake</strong> and add a video first.
+              </div>
+            ) : null}
+            {activeSection === "performance" ? (
+              <>
+                <VideoTable videos={videos} selectedVideoId={selectedVideoId} onSelect={setSelectedVideoId} />
+                <MetricsPanel metrics={metrics} loading={metricsLoading} />
+              </>
+            ) : null}
+            {activeSection === "compliance" ? (
+              <div className="rounded-2xl border border-slate-200 bg-white p-5">
+                <h2 className="text-lg font-bold text-slate-900">Compliance Snapshot</h2>
+                <p className="mt-2 text-sm text-slate-600">
+                  This section is ready for policy checks, disclosure validation, and audit logs. You can add those
+                  rules in the next phase.
+                </p>
+              </div>
+            ) : null}
           </div>
         </section>
       </div>
