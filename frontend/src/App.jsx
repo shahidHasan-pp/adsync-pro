@@ -1,6 +1,8 @@
 import { Navigate, Route, Routes } from "react-router-dom";
 import AuthPage from "./pages/AuthPage";
 import DashboardPage from "./pages/DashboardPage";
+import VideoAnalyticsPage from "./pages/VideoAnalyticsPage";
+import ComparePage from "./pages/ComparePage";
 import { getToken } from "./lib/auth";
 
 function ProtectedRoute({ children }) {
@@ -19,6 +21,22 @@ export default function App() {
         element={
           <ProtectedRoute>
             <DashboardPage />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/video-analytics"
+        element={
+          <ProtectedRoute>
+            <VideoAnalyticsPage />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/compare"
+        element={
+          <ProtectedRoute>
+            <ComparePage />
           </ProtectedRoute>
         }
       />

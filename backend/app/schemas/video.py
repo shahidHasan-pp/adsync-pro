@@ -28,6 +28,25 @@ class VideoCreateResponse(BaseModel):
     creator_oauth_url: str
 
 
+class YouTubePublicVideoResponse(BaseModel):
+    video_id: str
+    title: str
+    published_at: datetime
+    view_count: int
+    like_count: int
+    dislike_count: Optional[int] = None
+    channel_id: str
+    channel_url: str
+    thumbnail_url: Optional[str] = None
+    comment_count: Optional[int] = None
+    channel_title: Optional[str] = None
+
+
+class YouTubeCompareResponse(BaseModel):
+    first: YouTubePublicVideoResponse
+    second: YouTubePublicVideoResponse
+
+
 class VideoMetricsResponse(BaseModel):
     id: UUID
     video_id: UUID

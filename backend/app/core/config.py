@@ -28,6 +28,7 @@ class Settings(BaseSettings):
     # OAuth Settings (to be set in .env)
     GOOGLE_CLIENT_ID: Optional[str] = None
     GOOGLE_CLIENT_SECRET: Optional[str] = None
+    YOUTUBE_API_KEY: Optional[str] = None
     META_APP_ID: Optional[str] = None
     META_APP_SECRET: Optional[str] = None
     TIKTOK_CLIENT_KEY: Optional[str] = None

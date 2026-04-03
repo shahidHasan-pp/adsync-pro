@@ -71,6 +71,49 @@ class YouTubeService:
         }
 
 
+    async def fetch_public_video_details(self, api_key: str, video_id: str) -> dict[str, Any]:
+        url = "https://www.googleapis.com/youtube/v3/videos"
+        params = {"part": "statistics,snippet", "id": video_id, "key": api_key}
+
+        async with httpx.AsyncClient(timeout=20) as client:
+            response = await client.get(url, params=params)
+            response.raise_for_status()
+            payload = response.json()
+
+        items = payload.get("items", [])
+        if not items:
+            raise ValueError("Video not found")
+
+        item = items[0]
+        snippet = item.get("snippet", {})
+        stats = item.get("statistics", {})
+        thumbnails = snippet.get("thumbnails", {})
+
+        thumbnail_url = (
+            (thumbnails.get("high") or {}).get("url")
+            or (thumbnails.get("medium") or {}).get("url")
+            or (thumbnails.get("default") or {}).get("url")
+        )
+
+        dislike_count_raw = stats.get("dislikeCount")
+        dislike_count = int(dislike_count_raw) if dislike_count_raw is not None else None
+
+        channel_id = snippet.get("channelId", "")
+        return {
+            "video_id": item.get("id", video_id),
+            "title": snippet.get("title", f"YouTube Video {video_id}"),
+            "published_at": snippet.get("publishedAt"),
+            "view_count": int(stats.get("viewCount", 0)),
+            "like_count": int(stats.get("likeCount", 0)),
+            "dislike_count": dislike_count,
+            "channel_id": channel_id,
+            "channel_url": f"https://www.youtube.com/channel/{channel_id}",
+            "thumbnail_url": thumbnail_url,
+            "comment_count": int(stats.get("commentCount", 0)),
+            "channel_title": snippet.get("channelTitle"),
+        }
+
+
 class FacebookService:
     async def fetch_metrics(self, access_token: str, video_id: str) -> dict[str, Any]:
         url = f"https://graph.facebook.com/v18.0/{video_id}/video_insights"

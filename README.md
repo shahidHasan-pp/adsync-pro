@@ -91,3 +91,28 @@ A Creator Video Advertising Synchronization Platform.
 - Metrics dashboard with Recharts:
   - Demographics pie chart
   - Retention curve line chart
+
+
+
+## New Direct YouTube Flow
+
+- Dashboard now supports direct lookup by YouTube `video_id` without creator OAuth approval.
+- Button: `See All My Videos` loads all videos saved for the authenticated advertiser.
+- Compare page: `/compare` compares two YouTube videos without saving them to DB.
+
+New APIs:
+
+- `GET /api/v1/videos/youtube/public?video_id=<id>`
+- `GET /api/v1/videos/youtube/compare?video_id_1=<id>&video_id_2=<id>`
+
+Both endpoints require JWT authentication and use `YOUTUBE_API_KEY` from backend `.env`.
+
+## YouTube Public Video Snapshot
+
+Set `YOUTUBE_API_KEY` in `backend/.env` to enable public YouTube data in the Performance view.
+
+New endpoint:
+
+- `GET /api/v1/videos/{video_id}/youtube-public`
+
+This returns title, published date, thumbnail, channel info, and public stats (`view_count`, `like_count`, `dislike_count` when available).

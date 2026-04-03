@@ -2,3 +2,9 @@ node_modules
 dist
 .env
 .venv
+venv
+__pycache__
+*.pyc
+*.pyo
+*.pyd
+*.log
